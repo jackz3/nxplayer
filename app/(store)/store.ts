@@ -29,7 +29,15 @@ export const usePlayerStore = create<PlayerState>()((set) => ({
   loading: false,
   setLoadingSource: (source: SourceType, loading: boolean, path: string, fileName: string, seek: number) => set({ source, loading, path, fileName, seek, playId: -1 }),
   setLoading: (loading: boolean) => set({ loading }),
-  setSource: (src: SourceType, path: string, files: any[]) => set({ source: src, path, files, playId: -1 }),
+  setSource: (source: SourceType, path: string, files: any[]) => {
+    if (source === 'baidu') {
+      set({ source, path, files: files.filter(x => x.isdir === false), playId: -1 })
+    }
+    if (source === 'onedrive') {
+      set({ source, path, files: files.filter(x => x.isFile === true), playId: -1 })
+    }
+    // set({source, path, files, playId: -1 } )
+  },
   setPlayId: (id: number, seek: number = 0) => set({ playId: id, seek }),
   // setFiles: (files: any[]) => set({ files })
 }))

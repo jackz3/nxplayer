@@ -26,11 +26,11 @@ function BaiduFiles(props: BaiduFilesProps) {
   if (status !== 'authenticated') return null
 
   return (<>
-      <PathSelect root='baidu' path={paths} />
-    <div className='overflow-y-auto grow'>
+    <PathSelect root='baidu' path={paths} />
+    <div className='grow overflow-y-auto'>
       <FileList source='baidu' path={'/' + paths.join('/')} action={action} />
     </div>
-    </>
+  </>
   )
 }
 

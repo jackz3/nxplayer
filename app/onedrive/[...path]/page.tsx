@@ -21,8 +21,10 @@ function OnedriveFiles({ params }: { params: { path: string[] } }) {
   if (!loggedIn) return null
   return (
     <>
-        <PathSelect root='onedrive' path={paths} />
+      <PathSelect root='onedrive' path={paths} />
+      <div className='overflow-y-auto grow'>
         <FileList source='onedrive' path={'/' + paths.join('/')} action={action} />
+      </div>
     </>
   )
 }

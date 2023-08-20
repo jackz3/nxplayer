@@ -27,8 +27,9 @@ export async function GET(request: NextRequest) {
     console.log('url', url)
     const res = await fetch(`${url}&access_token=${accessToken}`)
     const data = await res.arrayBuffer()
-    console.log('data')
-    return new Response(data, { status: 200, headers: { 'Accept-Ranges': 'bytes' } })
+    return new Response(data, {
+      status: 200,
+      headers: { 'Accept-Ranges': 'bytes', 'Content-Length': `${ data.byteLength }`, 'Content-range': `bytes 0-${ data.byteLength - 1 }/${ data.byteLength}`, 'Content-Type': 'audio/mpeg' } })
   } else {
     return new Response('No token', { status: 401 })
   }

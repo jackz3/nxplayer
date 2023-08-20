@@ -45,7 +45,7 @@ interface FileListProps {
 function FileList (props: FileListProps) {
   const { path, source } = props
   const { data, error, isLoading } = useSWR([source, path], fetcher)
-  const [ setPlayId, setSource, playerPath ] = usePlayerStore(state => [state.setPlayId, state.setSource, state.path])
+  const [ setPlayId, setSource, playerPath, playId ] = usePlayerStore(state => [state.setPlayId, state.setSource, state.path, state.playId])
   const [ logout ] = useMsAccountStore(state => [state.logout])
 
   const playFile = (idx: number) => {
@@ -66,9 +66,9 @@ function FileList (props: FileListProps) {
   }
   if (error) return <div>error...</div>
   if (!data) return null
-  return <div className="grow">
+  return <div className="">
   {
-    data.map((file: BaiduFile|OneDriveStat, idx: number) => <FileItem key={idx} source={source} file={file} idx={idx} playFile={playFile} />)
+    data.map((file: BaiduFile|OneDriveStat, idx: number) => <FileItem key={idx} source={source} file={file} idx={idx} playFile={playFile} playing={playId === idx} />)
   }
   </div>
 }

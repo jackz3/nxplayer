@@ -24,7 +24,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body>
-        <div className='flex flex-col min-h-screen mx-auto relative w-full lg:max-w-3xl bg-white'>
+        <div className='flex flex-col h-screen mx-auto relative w-full lg:max-w-3xl bg-white overflow-hidden'>
           <SessionProvider>
             <Header />
             {children}
