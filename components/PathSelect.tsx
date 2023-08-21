@@ -23,7 +23,7 @@ function PathSelect(props: PathSelectProps) {
         </li>
       {
         path.slice(0, -1).map((item, idx) => (
-        <li>
+        <li key={idx}>
           <div className="flex items-center">
             <IoChevronForwardSharp className="w-4 h-4 text-gray-400 mr-1" aria-hidden="true" />
             <Link href={`/${root}/${path.slice(0, idx + 1).join('/')}`} className="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2 dark:text-gray-400 dark:hover:text-white">{decodeURIComponent(item)}</Link>

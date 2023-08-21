@@ -4,6 +4,7 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 import { init, msLogin, account, getList, profile, myPhoto } from '@/lib/msgraph'
 
 export type SourceType = 'baidu'|'onedrive'
+export type State = 'stopped' | 'playing' | 'paused'
 
 interface PlayerState {
   source?: SourceType
@@ -13,13 +14,15 @@ interface PlayerState {
   seek: number
   fileName: string
   loading: boolean
+  state: State
   setLoadingSource: (source: SourceType, loading: boolean, path: string, fileName: string, seek: number) => void
   setLoading: (loading: boolean) => void
   setSource: (src: SourceType, path: string, files: any[]) => void
   setPlayId: (id: number, seek?: number) => void
-  // setFiles: (files: any[]) => void
+  setPlayerState: (state: State) => void
+  setPlayIdByName: (source: SourceType, path: string, files: any[], fileName: string, seek: number) => void
 }
-export const usePlayerStore = create<PlayerState>()((set) => ({
+export const usePlayerStore = create<PlayerState>()((set, get) => ({
   // source: '',
   playId: -1,
   fileName: '',
@@ -27,11 +30,12 @@ export const usePlayerStore = create<PlayerState>()((set) => ({
   files: [],
   seek: 0,
   loading: false,
+  state: 'stopped',
   setLoadingSource: (source: SourceType, loading: boolean, path: string, fileName: string, seek: number) => set({ source, loading, path, fileName, seek, playId: -1 }),
   setLoading: (loading: boolean) => set({ loading }),
   setSource: (source: SourceType, path: string, files: any[]) => {
     if (source === 'baidu') {
-      set({ source, path, files: files.filter(x => x.isdir === false), playId: -1 })
+      set({ source, path, files: files.filter(x => x.isdir === 0), playId: -1 })
     }
     if (source === 'onedrive') {
       set({ source, path, files: files.filter(x => x.isFile === true), playId: -1 })
@@ -39,13 +43,29 @@ export const usePlayerStore = create<PlayerState>()((set) => ({
     // set({source, path, files, playId: -1 } )
   },
   setPlayId: (id: number, seek: number = 0) => set({ playId: id, seek }),
-  // setFiles: (files: any[]) => set({ files })
+  setPlayerState: (state: State) => set({ state }),
+  setPlayIdByName: (source: SourceType, path: string, files: any[], fileName: string, seek: number) => {
+    get().setSource(source, path, files)
+    let idx = -1
+    if (source === 'baidu') {
+      idx = get().files.findIndex((x: any) => x.server_filename === fileName)
+      // if (idx >= 0) {
+      //   get().setPlayId(idx, seek)
+      // }
+    }
+    if (source === 'onedrive') {
+      idx = get().files.findIndex((x: any) => x.name === fileName)
+    }
+    if (idx >= 0) {
+      get().setPlayId(idx, seek)
+    }
+  }
 }))
 
 export type BaiduFile = {
   fs_id: string
   server_filename: string
-  isdir: boolean
+  isdir: number 
   path: string
 }
 

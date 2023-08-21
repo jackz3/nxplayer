@@ -20,12 +20,9 @@ const fetcher = ([path]: [string]) => {
     }
 
 interface LoadBaiduProps {
-  // path: string
-  // fileName: string
-  // seek: number
 } 
 function LoadBaidu(props: LoadBaiduProps) {
-  const [ setPlayId, setSource, path, fileName, seek ] = usePlayerStore(state => [state.setPlayId, state.setSource, state.path, state.fileName, state.seek])
+  const [ setPlayId, setSource, path, fileName, seek, setPlayIdByName ] = usePlayerStore(state => [state.setPlayId, state.setSource, state.path, state.fileName, state.seek, state.setPlayIdByName])
   const { status } = useSession()
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -39,16 +36,12 @@ function LoadBaidu(props: LoadBaiduProps) {
 
   useEffect(() => {
     if (data) {
-      const idx = data.findIndex((x: any) => x.server_filename === fileName)
-      if (idx >= 0) {
-        setSource('baidu', path, data)
-        setPlayId(idx, seek)
-      }
+      setPlayIdByName('baidu', path, data, fileName, seek)
     }
   }, [data]) 
 
   return (
-    <div>Playing</div>
+    <div>Loading</div>
   )
 }
 

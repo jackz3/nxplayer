@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation'
 import { useMsAccountStore } from "@/app/(store)/store"
 import PathSelect from "@/components/PathSelect"
 import FileList from "@/components/FileList"
+import Loading from "@/components/Loading"
 
 function OnedriveFiles({ params }: { params: { path: string[] } }) {
   const { path } = params
@@ -18,7 +19,7 @@ function OnedriveFiles({ params }: { params: { path: string[] } }) {
     }
   }, [loggedIn])
 
-  if (!loggedIn) return null
+  if (!loggedIn) return <Loading message="Logging in" />
   return (
     <>
       <PathSelect root='onedrive' path={paths} />

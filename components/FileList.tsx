@@ -2,6 +2,7 @@ import useSWR from "swr"
 import FileItem from "./FileItem"
 import { usePlayerStore, SourceType, OneDriveStat, extractFileInfo, useLatestRecordStore, BaiduFile, useMsAccountStore } from "@/app/(store)/store"
 import { getList } from "@/lib/msgraph"
+import Loading from "./Loading"
 
 const fetcher = ([source, path]: [SourceType, string]) => {
   if (source === 'onedrive') {
@@ -55,7 +56,7 @@ function FileList (props: FileListProps) {
     setPlayId(idx)
   }
 
-  if (isLoading) return <div>loading...</div>
+  if (isLoading) return <Loading message="Loading ..." />
   if (error === 'Unauthorized' && source === 'onedrive') {
     console.log(error)
     logout()
@@ -65,7 +66,9 @@ function FileList (props: FileListProps) {
     console.log(error)
   }
   if (error) return <div>error...</div>
-  if (!data) return null
+
+  if (!data) return <Loading message="Loading ..." />
+  
   return <div className="">
   {
     data.map((file: BaiduFile|OneDriveStat, idx: number) => <FileItem key={idx} source={source} file={file} idx={idx} playFile={playFile} playing={playId === idx} />)

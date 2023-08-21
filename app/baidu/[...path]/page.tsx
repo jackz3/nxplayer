@@ -4,6 +4,7 @@ import { signIn, useSession } from "next-auth/react"
 import PathSelect from "@/components/PathSelect"
 import FileList from "@/components/FileList"
 import { useSearchParams } from "next/navigation"
+import Loading from "@/components/Loading"
 
 interface BaiduFilesProps {
   params: {
@@ -23,7 +24,7 @@ function BaiduFiles(props: BaiduFilesProps) {
     }
   }, [status])
 
-  if (status !== 'authenticated') return null
+  if (status !== 'authenticated') return <Loading message="Logging in" />
 
   return (<>
     <PathSelect root='baidu' path={paths} />

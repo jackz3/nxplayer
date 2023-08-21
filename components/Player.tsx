@@ -41,15 +41,15 @@ const Timers = [
 
 // let timerStart = 0
 
-type LoopMethod = 'loop'|'single'|'shuffle'
+type LoopMethod = 'loop' | 'single' | 'shuffle'
 export default function Player() {
-  const [source, playId, setPlayId, files, path, initialSeek, loading, setLoading, fileName] = usePlayerStore(state => [state.source, state.playId, state.setPlayId, state.files, state.path, state.seek, state.loading, state.setLoading, state.fileName])
-  const [ updateRecord, updateSeek, store ] = useLatestRecordStore(state => [state.updateRecord, state.updateSeek, state ])
+  const [source, playId, setPlayId, files, path, initialSeek, loading, setLoading, fileName, state, setPlayerState] = usePlayerStore(state => [state.source, state.playId, state.setPlayId, state.files, state.path, state.seek, state.loading, state.setLoading, state.fileName, state.state, state.setPlayerState])
+  const [updateRecord, updateSeek, store] = useLatestRecordStore(state => [state.updateRecord, state.updateSeek, state])
   const [duration, setDuration] = useState(0)
   const [seek, setSeek] = useState(0)
   const [percent, setPercent] = useState(0)
   const [handlerPercent, setHandlerPercent] = useState(0)
-  const [state, setState] = useState<'stopped' | 'playing' | 'paused'>('stopped')
+  // const [state, setState] = useState<'stopped' | 'playing' | 'paused'>('stopped')
   const [seeking, setSeeking] = useState(false)
   const [speed, setSpeed] = useState(1)
   const [collapsed, setCollapsed] = useState(true)
@@ -59,7 +59,7 @@ export default function Player() {
   const timerRef = useRef<number>(0)
   const timerStartRef = useRef<number>(0)
 
-  const onPlay = useCallback( (sound: Howl) => {
+  const onPlay = useCallback((sound: Howl) => {
     const d = sound.duration()
     const sk = sound.seek() ?? 0
     const p = sk * 100 / d
@@ -69,7 +69,7 @@ export default function Player() {
     updateSeek(source!, sk)
     if (timer > 0) {
       if (timerStartRef.current === 0) {
-        timerStartRef.current = Date.now() 
+        timerStartRef.current = Date.now()
         // setTimerStart(Date.now())
       }
       if (timerStartRef.current > 0 && (Date.now() - timerStartRef.current > timer * 60 * 1000)) {
@@ -77,7 +77,7 @@ export default function Player() {
         setTimerValue(0)
         // setTimerStart(0)
         timerStartRef.current = 0
-        setState('paused')
+        setPlayerState('paused')
       }
     }
     if (sound.playing()) {
@@ -137,15 +137,15 @@ export default function Player() {
     //   // myPlayer.play()
     // }
     playNext(myPlayer)
-      if (timerRef.current < 0 && (++timerStartRef.current + timerRef.current) == 0) {
-        myPlayer.pause()
-        timerStartRef.current = 0
-        setTimerValue(0)
-        setState('paused')
-      }
+    if (timerRef.current < 0 && (++timerStartRef.current + timerRef.current) == 0) {
+      myPlayer.pause()
+      timerStartRef.current = 0
+      setTimerValue(0)
+      setPlayerState('paused')
+    }
   }, [files])
 
-  const playSound = useCallback((myPlayer: MyPlayer) =>{
+  const playSound = useCallback((myPlayer: MyPlayer) => {
     myPlayer.onPlay(onPlay);
     myPlayer.onEnd(() => {
       onEnd(myPlayer)
@@ -153,19 +153,20 @@ export default function Player() {
     // if (initialSeek > 0) {
     //   myPlayer.seekSeconds(initialSeek);
     // }
+    myPlayer.rate(speed)
     myPlayer.play();
-    setState('playing');
-  }, [loopMethod, files])
+    setPlayerState('playing');
+  }, [loopMethod, files, speed])
 
   const playHandler = () => {
     const player = MyPlayer.getInstance()
     if (player) {
       if (state === 'playing') {
         player.pause()
-        setState('paused')
+        setPlayerState('paused')
       } else {
         player.play()
-        setState('playing')
+        setPlayerState('playing')
       }
     }
   }
@@ -198,13 +199,13 @@ export default function Player() {
   }
 
   const setTimerValue = (v: number) => {
-      setTimer(v)
-      timerRef.current = v
+    setTimer(v)
+    timerRef.current = v
   }
 
   const setLoopMethodValue = (v: LoopMethod) => {
-      setLoopMethod(v)
-      loopMethodRef.current = v
+    setLoopMethod(v)
+    loopMethodRef.current = v
   }
   const switchLoopMethod = () => {
     if (loopMethodRef.current === 'loop') {
@@ -217,60 +218,64 @@ export default function Player() {
   }
 
   return (
-    <div className="sticky w-full max-w-screen-md bottom-0 left-0 bg-white">
-      {
-        collapsed ? null : <div className='flex'>
-          {speed}
-          <RangeSlider className='' onChange={changeSpeed} sizing="sm" min={0.5} max={2} step={0.1} value={speed} />
-          timer
-          <select onChange={(e) => setTimerValue(+e.target.value)} className="block w-full p-2 mb-6 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-            {
-              Timers.map((t) => <option selected={t.value === timer} key={t.value} value={t.value}>{t.label}</option>)
-            }
-          </select>
-        </div>
-      }
-      <div className='flex'>
+    <div className="sticky w-full max-w-screen-md bottom-0 left-0 bg-white flex-shrink-0 border-t rounded-t-lg">
+      <div className='flex justify-between'>
         {(loading && source === 'baidu' && fileName && path) ? <LoadBaidu /> : null}
         {(loading && source === 'onedrive' && fileName && path) ? <LoadOnedrive /> : null}
-        <button onClick={() => setCollapsed(!collapsed)} type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+        <div className='text-sm mx-auto'>{state === 'playing' && source && store[source] ? store[source]?.fileName : null}</div>
+        <div onClick={() => setCollapsed(!collapsed)} className="mr-6 -mt-4 bg-white text-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-base text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
           {
-            collapsed ? <IoChevronUpCircleOutline className='w-3 h-3' /> : <IoChevronDownCircleOutline className='w-3 h-3' />
+            collapsed ? <IoChevronUpCircleOutline className='w-8 h-8' /> : <IoChevronDownCircleOutline className='w-8 h-8' />
           }
-          <span className="sr-only">Icon description</span>
-        </button>
+          <span className="sr-only">Toggle</span>
+        </div>
       </div>
-      <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4 dark:bg-gray-700">
-        <div className="bg-gray-600 h-2.5 rounded-full dark:bg-gray-300" style={{ "width": `${percent}%` }}></div>
+      {
+        collapsed ? null : <div className='flex px-2 justify-between my-4'>
+          <div className='flex items-center w-1/3'>
+            <span className='text-sm mr-1'>speed:{speed}</span>
+            <RangeSlider className='-mt-2' onChange={changeSpeed} sizing="sm" min={0.5} max={2} step={0.25} value={speed} /></div>
+          <button type="button" onClick={switchLoopMethod}>
+            {
+              loopMethod === 'loop' ? <IoRepeat className='w-6 h-6' /> : loopMethod === 'shuffle' ? <IoShuffle className='w-6 h-6' /> : <IoReload className='w-6 h-6' />
+            }
+          </button>
+          <div className='flex items-center w-2/5'>
+            <span className='text-sm mr-1'>timer</span>
+            <select onChange={(e) => setTimerValue(+e.target.value)} className="w-full block p-1 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+              {
+                Timers.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)
+              }
+            </select>
+          </div>
+        </div>
+      }
+      <div className="w-full bg-gray-200 rounded-full h-2 my-4 dark:bg-gray-700">
+        <div className="bg-gray-600 h-2 rounded-full dark:bg-gray-300" style={{ "width": `${percent}%` }}></div>
       </div>
-      <RangeSlider className='opacity-50' onMouseDown={onMouseDown} onMouseUp={onMouseUp} onChange={onSeek} sizing="sm" min={0} max={100} step={0.1} value={seeking ? handlerPercent : percent} />
-      <div className="flex">
+      <RangeSlider className='opacity-90 w-full absolute bottom-[4.5rem]' onMouseDown={onMouseDown} onMouseUp={onMouseUp} onChange={onSeek} sizing="sm" min={0} max={100} step={0.1} value={seeking ? handlerPercent : percent} />
+      <div className="flex justify-between px-2 pb-4">
         <div>{formatTime(seek)}</div>
-        <div>{ state === 'playing' && source && store[source] ? store[source]?.fileName : null }</div>
-        <button type="button" onClick={() => { if (playId > 0) { setPlayId(playId - 1) } }} className="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
-          <IoPlaySkipBack className='w-4 h-4' />
-          <span className="sr-only">Prev</span>
-        </button>
-        <button type="button" onClick={playHandler} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+        <div className='flex items-center'>
+          <button type="button" onClick={() => { if (playId > 0) { setPlayId(playId - 1) } }} className="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
+            <IoPlaySkipBack className='w-3 h-3' />
+            <span className="sr-only">Prev</span>
+          </button>
+          <button type="button" onClick={playHandler} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center mx-3 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            {
+              state === 'playing' ? <IoPause className="w-6 h-6" /> : <IoPlay className="w-6 h-6" />
+            }
+            <span className="sr-only">Play</span>
+          </button>
+          <button type="button" onClick={() => playNext(MyPlayer.getInstance())} className="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
+            <IoPlaySkipForward className='w-3 h-3' />
+            <span className="sr-only">Next</span>
+          </button>
           {
-            state === 'playing' ? <IoPause className="w-4 h-4" /> : <IoPlay className="w-4 h-4" />
+            timer > 0 ? <div>{formatTime(timer * 60 - (timerStartRef.current === 0 ? 0 : (Date.now() - timerStartRef.current) / 1000))}</div> : null
           }
-          <span className="sr-only">Play</span>
-        </button>
-        <button type="button" onClick={() => playNext(MyPlayer.getInstance())} className="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
-          <IoPlaySkipForward className='w-4 h-4' />
-          <span className="sr-only">Prev</span>
-        </button>
-
+        </div>
         <div>{formatTime(duration)}</div>
-        {
-          timer > 0 ? <div>{formatTime(timer * 60 - (timerStartRef.current === 0 ? 0 : (Date.now() - timerStartRef.current) / 1000) )}</div> : null
-        }
-        <button type="button" onClick={switchLoopMethod}>
-        {
-          loopMethod === 'loop' ? <IoRepeat className='w-4 h-4' /> : loopMethod === 'shuffle' ? <IoShuffle className='w-4 h-4' /> : <IoReload className='w-4 h-4' />
-        }
-        </button>
       </div>
     </div>
   )

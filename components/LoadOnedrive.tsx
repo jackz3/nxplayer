@@ -20,14 +20,11 @@ const fetcher = ([path, loggedIn]: [string, boolean]) => {
 }
 
 interface LoadBaiduProps {
-  // path: string
-  // fileName: string
-  // seek: number
 } 
 function LoadOnedrive(props: LoadBaiduProps) {
   // const { path, fileName, seek } = props
   const [ loggedIn, login] = useMsAccountStore(state => [state.loggedIn, state.login])
-  const [ setPlayId, setSource, path, fileName, seek ] = usePlayerStore(state => [state.setPlayId, state.setSource, state.path, state.fileName, state.seek])
+  const [ setPlayId, setSource, path, fileName, seek, setPlayIdByName ] = usePlayerStore(state => [state.setPlayId, state.setSource, state.path, state.fileName, state.seek, state.setPlayIdByName])
   useEffect(() => {
     if (!loggedIn) {
       login()
@@ -37,16 +34,12 @@ function LoadOnedrive(props: LoadBaiduProps) {
 
   useEffect(() => {
     if (data) {
-      const idx = data.findIndex((x: any) => x.name === fileName)
-      if (idx >= 0) {
-        setSource('onedrive', path, data)
-        setPlayId(idx, seek)
-      }
+      setPlayIdByName('onedrive', path, data, fileName, seek)
     }
   }, [data]) 
 
   return (
-    <div>Playing</div>
+    <div>Loading</div>
   )
 }
 
