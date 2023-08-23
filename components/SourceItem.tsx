@@ -38,7 +38,7 @@ function Home(props: SourceProps) {
           <span className="text-sm text-gray-500 dark:text-gray-400">{decodeURIComponent(path)}</span>
         </div>
         <div className='flex items-center'>
-          <span className='text-sm mr-1'>{fileName ?? msg}</span>
+          <span className='text-sm mr-1'>{fileName || msg}</span>
           {state === 'playing' && source === playerSource ? <IoVolumeMediumOutline className='w-6 h-6' /> : fileName ? <button onClick={play} className='inline-flex items-center text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg px-2 py-1 text-xs font-medium text-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800'>
             <IoPlay className='w-4 h-4 mx-2' />{seek ? <span className='text-sm mr-1'>{formatTime(seek)}</span> : null}</button> : null}
         </div>

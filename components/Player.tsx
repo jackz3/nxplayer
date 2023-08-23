@@ -67,15 +67,13 @@ export default function Player() {
     setSeek(sk)
     setPercent(p)
     updateSeek(source!, sk)
-    if (timer > 0) {
+    if (timerRef.current > 0) {
       if (timerStartRef.current === 0) {
         timerStartRef.current = Date.now()
-        // setTimerStart(Date.now())
       }
-      if (timerStartRef.current > 0 && (Date.now() - timerStartRef.current > timer * 60 * 1000)) {
+      if (timerStartRef.current > 0 && (Date.now() - timerStartRef.current > timerRef.current * 60 * 1000)) {
         sound.pause()
         setTimerValue(0)
-        // setTimerStart(0)
         timerStartRef.current = 0
         setPlayerState('paused')
       }
@@ -149,7 +147,7 @@ export default function Player() {
     myPlayer.rate(speed)
     myPlayer.play();
     setPlayerState('playing');
-  }, [loopMethod, files, speed, playId])
+  }, [loopMethod, files, speed])
 
   const playHandler = () => {
     const player = MyPlayer.getInstance()
@@ -235,7 +233,7 @@ export default function Player() {
           </button>
           <div className='flex items-center w-2/5'>
             <span className='text-sm mr-1'>timer</span>
-            <select onChange={(e) => setTimerValue(+e.target.value)} className="w-full block p-1 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <select value={timer} onChange={(e) => setTimerValue(+e.target.value)} className="w-full block p-1 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
               {
                 Timers.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)
               }
@@ -265,7 +263,7 @@ export default function Player() {
             <span className="sr-only">Next</span>
           </button>
           {
-            timer > 0 ? <div>{formatTime(timer * 60 - (timerStartRef.current === 0 ? 0 : (Date.now() - timerStartRef.current) / 1000))}</div> : null
+            timer > 0 ? <div className='ml-6 text-sm text-orange-600 absolute right-[20%]'>{formatTime(timer * 60 - (timerStartRef.current === 0 ? 0 : (Date.now() - timerStartRef.current) / 1000))}</div> : null
           }
         </div>
         <div>{formatTime(duration)}</div>
