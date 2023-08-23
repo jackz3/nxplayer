@@ -104,15 +104,16 @@ export default function Player() {
         const url = file.downloadUrl
         const name = file.name
         loadPlay(myPlayer, 'onedrive', url, name)
-        // myPlayer.createSound(url, 'onedrive', initialSeek);
-        // playSound(myPlayer)
-        // updateRecord(source, path, name)
+      } else if (source === 'local') {
+        const file = files[playId]
+        loadPlay(myPlayer, 'local', file.data, file.name)
       }
     }
   }, [source, playId])
 
   const playNext = useCallback((myPlayer: MyPlayer) => {
     const loopMethod = loopMethodRef.current
+    console.log('end', loopMethod, files.length, playId)
     if (loopMethod === 'loop') {
       if (playId === files.length - 1) {
         setPlayId(0);
@@ -123,19 +124,10 @@ export default function Player() {
       myPlayer.seek(0);
       myPlayer.play()
     }
-  }, [files])
+  }, [files, playId])
 
   const onEnd = useCallback((myPlayer: MyPlayer) => {
-    // if (loopMethod === 'loop') {
-    //   if (playId === files.length - 1) {
-    //     setPlayId(0);
-    //   } else {
-    //     setPlayId(playId + 1);
-    //   }
-    // } else if (loopMethod === 'single') {
-    //   // myPlayer.seek(0);
-    //   // myPlayer.play()
-    // }
+    console.log('onEnd', playId)
     playNext(myPlayer)
     if (timerRef.current < 0 && (++timerStartRef.current + timerRef.current) == 0) {
       myPlayer.pause()
@@ -143,9 +135,10 @@ export default function Player() {
       setTimerValue(0)
       setPlayerState('paused')
     }
-  }, [files])
+  }, [files, playId])
 
   const playSound = useCallback((myPlayer: MyPlayer) => {
+    console.log('playSound', playId)
     myPlayer.onPlay(onPlay);
     myPlayer.onEnd(() => {
       onEnd(myPlayer)
@@ -156,7 +149,7 @@ export default function Player() {
     myPlayer.rate(speed)
     myPlayer.play();
     setPlayerState('playing');
-  }, [loopMethod, files, speed])
+  }, [loopMethod, files, speed, playId])
 
   const playHandler = () => {
     const player = MyPlayer.getInstance()

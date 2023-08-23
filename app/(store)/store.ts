@@ -1,9 +1,9 @@
 import { create } from 'zustand'
 import { signIn } from "next-auth/react"
 import { persist, createJSONStorage } from 'zustand/middleware'
-import { init, msLogin, account, getList, profile, myPhoto } from '@/lib/msgraph'
+import { init, msLogin, account, myPhoto, logout } from '@/lib/msgraph'
 
-export type SourceType = 'baidu'|'onedrive'
+export type SourceType = 'baidu'|'onedrive'|'local'
 export type State = 'stopped' | 'playing' | 'paused'
 
 interface PlayerState {
@@ -36,11 +36,11 @@ export const usePlayerStore = create<PlayerState>()((set, get) => ({
   setSource: (source: SourceType, path: string, files: any[]) => {
     if (source === 'baidu') {
       set({ source, path, files: files.filter(x => x.isdir === 0), playId: -1 })
-    }
-    if (source === 'onedrive') {
+    } else if (source === 'onedrive') {
       set({ source, path, files: files.filter(x => x.isFile === true), playId: -1 })
+    } else {
+      set({ source, path, files, playId: -1 })
     }
-    // set({source, path, files, playId: -1 } )
   },
   setPlayId: (id: number, seek: number = 0) => set({ playId: id, seek }),
   setPlayerState: (state: State) => set({ state }),
@@ -67,6 +67,7 @@ export type BaiduFile = {
   server_filename: string
   isdir: number 
   path: string
+  size: number
 }
 
 export interface OneDriveStat {
@@ -113,7 +114,8 @@ export const useMsAccountStore = create<MsAccount>()((set) => ({
       set({ avatar })
     }
   },
-  logout: () => {
+  logout: async () => {
+    await logout()
     set({ loggedIn: false })
   }
   // getFiles: async (path: string) => {
@@ -162,6 +164,7 @@ interface LatestRecord {
   source: SourceType,
   baidu?: PlayRecord,
   onedrive?: PlayRecord,
+  local?: PlayRecord,
   updateRecord: (source: SourceType, path: string, fileName: string) => void,
   updateSeek: (source: SourceType, seek: number) => void
 }
@@ -172,6 +175,7 @@ export const useLatestRecordStore = create<LatestRecord>()(
       source: 'baidu',
       baidu: undefined,
       onedrive: undefined,
+      local: undefined,
       updateRecord: (source: SourceType, path: string, fileName: string) => {
         set({ [source]: { path, fileName, seek: 0 }, source })
       },

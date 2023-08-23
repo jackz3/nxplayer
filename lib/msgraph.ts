@@ -1,9 +1,12 @@
 import * as msal from "@azure/msal-browser";
+import { redirect } from "next/navigation"
 const LoginMode: string = 'redirect'
+const Host = process.env.NEXT_PUBLIC_HOST
 
 const msalConfig = {
   auth: {
-    clientId: `${process.env.NEXT_PUBLIC__AZURE_AD_CLIENT_ID}`
+    clientId: `${process.env.NEXT_PUBLIC__AZURE_AD_CLIENT_ID}`,
+    redirectUri:`${Host}`,
   },
   cache: {
     cacheLocation: "localStorage", // This configures where your cache will be stored
@@ -31,15 +34,21 @@ function handleResponse(resp: msal.AuthenticationResult|null) {
 }
 
 function setAccount(resp: msal.AuthenticationResult) {
+  if (resp.state && resp.state !== Host) {
+    debugger
+    redirect(resp.state)
+  }
     account.accessToken = resp.accessToken
     account.username = resp.account!.username
     account.name = resp.account!.name ?? ''
+    account.state = resp.state
 }
 
 export type MsAccount = {
   accessToken: string 
   username: string
   name: string
+  state?: string
 }
 
 export const account: MsAccount = {
@@ -70,9 +79,10 @@ export async function msLogin() {
   }
   const loginRequest = {
     scopes: ['files.read.all'],// optional Array<string>
-    // redirect_uri: import.meta.env.VITE_REDIRECT_URI ?? window.location.href
-    redirect_uri: window.location.href
+    // redirect_uri: window.location.href === Host ? Host : `${Host}/onedrive`,
+    state: window.location.href
   }
+  console.log('login request', loginRequest)
   const reLogin = () => {
       if (LoginMode === 'popup') {
         return msalInstance.loginPopup({...loginRequest }).then(handleResponse)
@@ -109,7 +119,9 @@ export async function logout() {
   if (LoginMode === 'popup') {
     return msalInstance.logoutPopup() 
   } else {
-    return msalInstance.logoutRedirect()
+    return msalInstance.logoutRedirect().then(() => {
+      redirect('/')
+    })
   }
 }
 

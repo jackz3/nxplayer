@@ -1,11 +1,11 @@
 'use client';
 import { useEffect, useState, useRef } from "react";
 import { Collapse } from "flowbite";
-import { useSession } from "next-auth/react"
+import { useSession, signOut } from "next-auth/react"
 import { usePathname } from 'next/navigation'
 import type { CollapseOptions, CollapseInterface } from "flowbite";
 import Link from "next/link";
-import { useMsAccountStore, usePlayerStore } from "@/app/(store)/store";
+import { SourceType, useMsAccountStore, usePlayerStore } from "@/app/(store)/store";
 /*
 * $targetEl: required
 * $triggerEl: optional
@@ -16,7 +16,7 @@ function Header() {
   const pathname = usePathname()
   const { data: session } = useSession()
   const [ source ] = usePlayerStore(state => [state.source])
-  const [ msName, msAvatar ] = useMsAccountStore(state => [state.name, state.avatar])
+  const [ msName, msAvatar, logout ] = useMsAccountStore(state => [state.name, state.avatar, state.logout])
   const [avatarUrl, setAvatarUrl] = useState<string>('')
   const menuRef = useRef<CollapseInterface>()
   useEffect(() => {
@@ -55,28 +55,42 @@ function Header() {
   }
   let name
   let avatarSrc = ''
-  if (pathname.indexOf('/baidu') === 0 || source === 'baidu') {
+  let st: SourceType|undefined = source
+  if (pathname.indexOf('/baidu') === 0) {
+    st = 'baidu'
+  } else if (pathname.indexOf('/onedrive') === 0) {
+    st = 'onedrive'
+  }
+  if (st === 'onedrive') {
+    name = msName
+    if (msAvatar) {
+      avatarSrc = URL.createObjectURL(msAvatar)
+    }
+  } else if (st === 'baidu') {
     name = session?.user?.name
     const url = session?.user?.image
     if (url) {
       avatarSrc = url
     }
   }
-  if (pathname.indexOf('/onedrive') === 0 || source === 'onedrive') {
-    name = msName
-    if (msAvatar) {
-      avatarSrc = URL.createObjectURL(msAvatar)
-    }
-  }
   const avatar = <button type="button" className={`${session ? 'block' : 'hidden'} flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600`} id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
     <span className="sr-only">Open user menu</span>
     { avatarSrc ? <img className="w-8 h-8 rounded-full" src={avatarSrc} alt="user photo" /> : null}
   </button>
+
+  const onSignOut = (e: any) => {
+    if (st === 'onedrive') {
+      logout()
+    } if (st === 'baidu') {
+      e.preventDefault() 
+      signOut({ callbackUrl: '/' })
+    }
+  }
   return (
     <nav className="bg-white border-gray-200 dark:bg-gray-900 sticky top-0 flex-shrink-0">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <a href={ process.env.NEXT_PUBLIC_HOST } className="flex items-center">
-          <img src="https://flowbite.com/docs/images/logo.svg" className="h-8 mr-3" alt="Flowbite Logo" />
+          <img src="/logo.svg" className="h-8 mr-3" alt="Logo" />
           <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Cloud Player</span>
         </a>
         <div className="flex items-center md:order-2">
@@ -91,7 +105,7 @@ function Header() {
                 <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Settings</a>
               </li>
               <li>
-                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</a>
+                <Link href="/" onClick={onSignOut} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign out</Link>
               </li>
             </ul>
           </div>

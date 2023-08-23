@@ -1,7 +1,5 @@
 import { Howl, Howler } from 'howler';
 
-let sound: Howl
-
 export function formatTime (secs: number) {
   if (!secs) return '--'
     const minutes = Math.floor(secs / 60) || 0;

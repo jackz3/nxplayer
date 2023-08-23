@@ -3,7 +3,7 @@ import { usePlayerStore } from "@/app/(store)/store"
 import { signIn, useSession } from "next-auth/react"
 import useSWR from "swr"
 
-const fetcher = ([path]: [string]) => {
+export const baiduFetcher = ([path]: [string]) => {
   return fetch('/api/proxy', {
         method: 'POST',
         headers: {
@@ -14,9 +14,7 @@ const fetcher = ([path]: [string]) => {
         }),
       })
       .then((res) => res.json())
-      .then((res) => {
-        return res.filter((x: any) => x.isdir === 1 || x.real_category === 'mp3')
-      })
+      .then((res) => res.filter((x: any) => x.isdir === 1 || x.real_category === 'mp3' || x.server_filename.includes('.mp3')))
     }
 
 interface LoadBaiduProps {
@@ -32,7 +30,7 @@ function LoadBaidu(props: LoadBaiduProps) {
 
     }
   }, [status])
-  const { data, error, isLoading } = useSWR([path], fetcher)
+  const { data, error, isLoading } = useSWR([path], baiduFetcher)
 
   useEffect(() => {
     if (data) {
