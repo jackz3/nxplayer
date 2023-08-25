@@ -10,7 +10,7 @@ const nextConfig = {
         destination: 'https://pan.baidu.com/:url*',
       },
       {
-        source: '/proxy/baidu_dl/:url*',
+        source: '/proxy/baidu_dl/:url/file/:id*',
         // has: [
         //   {
         //     type: 'query',
@@ -18,7 +18,7 @@ const nextConfig = {
         //     value: '(?<url>.*)' // Named capture group to match anything on the value
         //   }
         // ],
-        destination: 'https://d.pcs.baidu.com/:url*',
+        destination: 'http://:url/file/:id*',
       },
     ]
   },

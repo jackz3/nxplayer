@@ -30,17 +30,6 @@ const getFileInfo = async (fsId: string, token?: string) => {
   // return requestBaidu(`/rest/2.0/xpan/multimedia?method=filemetas&dlink=1&fsids=[${fsId}]`)
 }
 
-function getFinalRedirectUrl(url: string) {
-  return fetch(url, { method: 'HEAD', redirect: 'manual' })
-    .then((response) => {
-      if (response.status === 302) {
-        const redirectUrl = response.headers.get('location');
-        return redirectUrl;
-      } else {
-        throw new Error('The URL did not return a 302 redirect.');
-      }
-    });
-}
 
 const Timers = [
   { value: 0, label: '不定时' },
@@ -110,9 +99,17 @@ export default function Player() {
         getFileInfo(fsId, session?.user.accessToken).then((data: any) => {
           const dlink = data[0].dlink
           console.log('dlink', dlink)
+          // getFinalRedirectUrl(`${dlink}?access_token=${session?.user.accessToken}`).then((finalUrl) => {
+          //   if (finalUrl) {
+          //     const url = `/proxy/baidu_dl${finalUrl.slice(8)}`
+          //     console.log(finalUrl, url)
+          //     loadPlay(myPlayer, 'baidu', url, name)
+
+          //     // const urlObj = new URL(finalUrl)
+          //     // ${urlObj.pathname}${urlObj.search}&access_token=${session?.user.accessToken}`
+          //   }
+          // })
           const url = `/api/proxy?url=${encodeURIComponent(dlink)}`
-          // const urlObj = new URL(dlink)
-          // const url = `/proxy/baidu_dl${urlObj.pathname}${urlObj.search}&access_token=${session?.user.accessToken}`
           loadPlay(myPlayer, 'baidu', url, name)
         })
       } else if (source === 'onedrive') {
