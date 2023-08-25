@@ -2,6 +2,7 @@
 import { useState, useEffect, ChangeEvent, useCallback, useRef } from 'react'
 import { IoPlaySkipBack, IoPlaySkipForward, IoChevronUpCircleOutline, IoChevronDownCircleOutline, IoPause, IoRepeat, IoShuffle, IoReload, IoPlay } from 'react-icons/io5'
 import { Howl } from 'howler';
+import { useSession } from 'next-auth/react';
 import { MyPlayer, formatTime } from '@/lib/Player';
 import { usePlayerStore, useLatestRecordStore, OneDriveStat, BaiduFile, SourceType } from '@/app/(store)/store';
 import { RangeSlider } from 'flowbite-react'
@@ -22,10 +23,24 @@ export function requestBaidu(url: string, headers: any = {}, params: any = {}) {
   }).then((res) => res.json())
 }
 
-const getFileInfo = async (fsId: string) => {
-  return requestBaidu(`/rest/2.0/xpan/multimedia?method=filemetas&dlink=1&fsids=[${fsId}]`)
+const getFileInfo = async (fsId: string, token?: string) => {
+  return fetch(`/proxy/baidu_pan/rest/2.0/xpan/multimedia?method=filemetas&dlink=1&fsids=[${fsId}]&access_token=${token}`)
+    .then(res => res.json())
+    .then(res => res.list)
+  // return requestBaidu(`/rest/2.0/xpan/multimedia?method=filemetas&dlink=1&fsids=[${fsId}]`)
 }
 
+function getFinalRedirectUrl(url: string) {
+  return fetch(url, { method: 'HEAD', redirect: 'manual' })
+    .then((response) => {
+      if (response.status === 302) {
+        const redirectUrl = response.headers.get('location');
+        return redirectUrl;
+      } else {
+        throw new Error('The URL did not return a 302 redirect.');
+      }
+    });
+}
 
 const Timers = [
   { value: 0, label: '不定时' },
@@ -43,6 +58,7 @@ const Timers = [
 
 type LoopMethod = 'loop' | 'single' | 'shuffle'
 export default function Player() {
+  const { data: session } = useSession()
   const [source, playId, setPlayId, files, path, initialSeek, loading, setLoading, fileName, state, setPlayerState] = usePlayerStore(state => [state.source, state.playId, state.setPlayId, state.files, state.path, state.seek, state.loading, state.setLoading, state.fileName, state.state, state.setPlayerState])
   const [updateRecord, updateSeek, store] = useLatestRecordStore(state => [state.updateRecord, state.updateSeek, state])
   const [duration, setDuration] = useState(0)
@@ -91,10 +107,12 @@ export default function Player() {
         const file = files[playId] as BaiduFile
         const name = file.server_filename
         const fsId = file.fs_id
-        getFileInfo(fsId).then((data: any) => {
+        getFileInfo(fsId, session?.user.accessToken).then((data: any) => {
           const dlink = data[0].dlink
           console.log('dlink', dlink)
           const url = `/api/proxy?url=${encodeURIComponent(dlink)}`
+          // const urlObj = new URL(dlink)
+          // const url = `/proxy/baidu_dl${urlObj.pathname}${urlObj.search}&access_token=${session?.user.accessToken}`
           loadPlay(myPlayer, 'baidu', url, name)
         })
       } else if (source === 'onedrive') {

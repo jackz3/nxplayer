@@ -73,9 +73,10 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       console.log('session', session, token);
       if (session.user) {
-        const ss = (session.user) as any
-        ss.accessToken = (token as any).accessToken
-        ss.refreshToken = (token as any).refreshToken
+        session.user.accessToken = token.accessToken as string
+        const user = (session.user) as any
+        // user.accessToken = (token as any).accessToken
+        user.refreshToken = (token as any).refreshToken
       }
       return session
     }

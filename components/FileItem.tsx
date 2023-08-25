@@ -82,7 +82,7 @@ function FileItem(props: FileItemProps) {
     const file = props.file as OneDriveStat
     renderItem = file.isFile ? <PlayableItem source="onedrive" file={file} idx={idx} playFile={playFile} /> : <DirItem source="onedrive" file={file} />
   }
-  return <div className={`mx-4 px-2 pb-12 border-b border-gray-200 h-10 leading-[3rem] cursor-pointer ${playId === idx ? 'bg-gray-100' : ''}`}>{
+  return <div className={`mx-4 px-2 pb-12 border-b border-gray-200 h-10 leading-[3rem] cursor-pointer ${playId >= 0 && playId === idx ? 'bg-gray-100' : ''}`}>{
     renderItem
   }</div>
 }

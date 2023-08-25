@@ -5,6 +5,7 @@ import { useSession, signOut } from "next-auth/react"
 import { usePathname } from 'next/navigation'
 import type { CollapseOptions, CollapseInterface } from "flowbite";
 import Link from "next/link";
+import Image from "next/image";
 import { SourceType, useMsAccountStore, usePlayerStore } from "@/app/(store)/store";
 /*
 * $targetEl: required
@@ -90,7 +91,7 @@ function Header() {
     <nav className="bg-white border-gray-200 dark:bg-gray-900 sticky top-0 flex-shrink-0">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <a href={ process.env.NEXT_PUBLIC_HOST } className="flex items-center">
-          <img src="/logo.svg" className="h-8 mr-3" alt="Logo" />
+          <Image src="/logo.svg" width={32} height={32} className="h-8 mr-3" alt="Logo" />
           <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Cloud Player</span>
         </a>
         <div className="flex items-center md:order-2">

@@ -91,7 +91,6 @@ interface MsAccount {
   name: string
   avatar?: Blob
   files: OneDriveStat[]
-  // init: () => Promise<void>
   login: () => Promise<void>
   logout: () => void
   // getFiles: (path: string) => Promise<any>
@@ -102,10 +101,6 @@ export const useMsAccountStore = create<MsAccount>()((set) => ({
   name: '',
   avatar: undefined,
   files: [],
-  init: async () => {
-    await init()
-    set({ username: account.username, name: account.name, loggedIn: account.accessToken !== '' })
-  },
   login: async () => {
     await msLogin()
     if (account && account.accessToken) { 
@@ -135,23 +130,19 @@ export const useMsAccountStore = create<MsAccount>()((set) => ({
 }))
 
 interface BaiduAccount {
-  loggedIn: boolean
+  token: ''
   username: string
   name: string
-  files: OneDriveStat[]
-  login: () => Promise<void>
+  // login: () => Promise<void>
   // getFiles: (path: string) => Promise<any>
 }
 export const useBaiduAccountStore = create<BaiduAccount>()((set) => ({
-  loggedIn: false,
+  token: '',
   username: '',
   name: '',
-  files: [],
-  login: async () => {
-    signIn()
-  },
-  getFiles: async (path: string) => {
-  }
+  // login: async () => {
+  //   signIn()
+  // },
 }))
 
 

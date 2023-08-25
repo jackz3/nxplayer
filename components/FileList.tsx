@@ -4,8 +4,9 @@ import { usePlayerStore, SourceType, OneDriveStat, extractFileInfo, BaiduFile, u
 import { getList } from "@/lib/msgraph"
 import Loading from "./Loading"
 import { baiduFetcher } from "./LoadBaidu"
+import { useSession } from "next-auth/react"
 
-const fetcher = ([source, path]: [SourceType, string]) => {
+const fetcher = ([source, path, token]: [SourceType, string, string]) => {
   if (source === 'onedrive') {
     return getList(path).then(res => {
       if (res.status === 401) {
@@ -22,7 +23,7 @@ const fetcher = ([source, path]: [SourceType, string]) => {
       return list
     })//.catch(e => { console.log(e)})
   }
-  return baiduFetcher([path])
+  return baiduFetcher([path, token])
 }
 
 interface FileListProps {
@@ -32,7 +33,8 @@ interface FileListProps {
 }
 function FileList (props: FileListProps) {
   const { path, source } = props
-  const { data, error, isLoading } = useSWR([source, path], fetcher)
+  const { data: session } = useSession()
+  const { data, error, isLoading } = useSWR([source, path, session?.user.accessToken], fetcher)
   const [ setPlayId, setSource, playerSource, playerPath, playId ] = usePlayerStore(state => [state.setPlayId, state.setSource, state.source, state.path, state.playId])
   const [ logout ] = useMsAccountStore(state => [state.logout])
 
