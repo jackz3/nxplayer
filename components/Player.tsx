@@ -259,7 +259,7 @@ export default function Player() {
       <div className="w-full bg-gray-200 rounded-full h-2 my-4 dark:bg-gray-700">
         <div className="bg-gray-600 h-2 rounded-full dark:bg-gray-300" style={{ "width": `${percent}%` }}></div>
       </div>
-      <RangeSlider className='opacity-90 w-full absolute bottom-[4.5rem]' onMouseDown={onMouseDown} onMouseUp={onMouseUp} onChange={onSeek} sizing="sm" min={0} max={100} step={0.1} value={seeking ? handlerPercent : percent} />
+      <RangeSlider className='opacity-90 w-full absolute bottom-[4.5rem]' onTouchStart={onMouseDown} onTouchEnd={onMouseUp} onMouseDown={onMouseDown} onMouseUp={onMouseUp} onChange={onSeek} sizing="sm" min={0} max={100} step={0.1} value={seeking ? handlerPercent : percent} />
       <div className="flex justify-between px-2 pb-4">
         <div>{formatTime(seek)}</div>
         <div className='flex items-center'>
