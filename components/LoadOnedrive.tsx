@@ -24,10 +24,10 @@ interface LoadBaiduProps {
 function LoadOnedrive(props: LoadBaiduProps) {
   // const { path, fileName, seek } = props
   const [ loggedIn, login] = useMsAccountStore(state => [state.loggedIn, state.login])
-  const [ setPlayId, setSource, path, fileName, seek, setPlayIdByName ] = usePlayerStore(state => [state.setPlayId, state.setSource, state.path, state.fileName, state.seek, state.setPlayIdByName])
+  const [ path, fileName, seek, setPlayIdByName ] = usePlayerStore(state => [state.path, state.fileName, state.seek, state.setPlayIdByName])
   useEffect(() => {
     if (!loggedIn) {
-      login()
+      login('onedrive' + path)
     }
   }, [loggedIn])
   const { data, error, isLoading } = useSWR([path, loggedIn], fetcher)

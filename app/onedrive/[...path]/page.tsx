@@ -15,7 +15,7 @@ function OnedriveFiles({ params }: { params: { path: string[] } }) {
 
   useEffect(() => {
     if (!loggedIn) {
-      login()
+      login(location.pathname)
     }
   }, [loggedIn])
 
@@ -24,7 +24,7 @@ function OnedriveFiles({ params }: { params: { path: string[] } }) {
     <>
       <PathSelect root='onedrive' path={paths} />
       <div className='overflow-y-auto grow'>
-        <FileList source='onedrive' path={'/' + paths.join('/')} action={action} />
+        <FileList source='onedrive' path={'/' + paths.join('/')} />
       </div>
     </>
   )

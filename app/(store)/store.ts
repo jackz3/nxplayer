@@ -91,7 +91,7 @@ interface MsAccount {
   name: string
   avatar?: Blob
   files: OneDriveStat[]
-  login: () => Promise<void>
+  login: (redirectUri: string) => Promise<void>
   logout: () => void
   // getFiles: (path: string) => Promise<any>
 }
@@ -101,8 +101,8 @@ export const useMsAccountStore = create<MsAccount>()((set) => ({
   name: '',
   avatar: undefined,
   files: [],
-  login: async () => {
-    await msLogin()
+  login: async (redirectUri: string) => {
+    await msLogin(redirectUri)
     if (account && account.accessToken) { 
       set({ username: account.username, name: account.name, loggedIn: true })
       const avatar = await myPhoto().then(res => res.blob())

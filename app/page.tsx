@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import SourceItem from '@/components/SourceItem'
 import LocalFiles from '@/components/LocalFiles'
+import MsLoginRedirect from '@/components/MsLoginRedirect'
 
 // const inter = Inter({ subsets: ['latin'] })
 
@@ -14,6 +15,7 @@ export default function Home() {
                     <LocalFiles />
                 </ul>
             </div>
+            <MsLoginRedirect />
         </div>
     )
 }

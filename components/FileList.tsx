@@ -29,7 +29,6 @@ const fetcher = ([source, path, token]: [SourceType, string, string]) => {
 interface FileListProps {
   source: SourceType,
   path: string,
-  action: boolean
 }
 function FileList (props: FileListProps) {
   const { path, source } = props
