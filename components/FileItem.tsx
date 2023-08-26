@@ -33,8 +33,7 @@ function DirItem(props: DirItemProps) {
     name = f.server_filename
   } else {
     const f = file as OneDriveStat
-    const { href } = location
-    url = `${href}/${f.name}`
+    url = `/onedrive${f.path || '/'}/${f.name}`
     name = f.name
   }
   return <Link className="inline-flex items-center w-full" href={url}><IoFolderOutline className="w-4 h-4 mr-1" />{name}</Link>

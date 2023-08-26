@@ -76,12 +76,14 @@ export interface OneDriveStat {
   downloadUrl: string;
   isFile: boolean;
   name: string;
+  path: string
 }
 const _oneDrive_cache: {[path: string]: OneDriveStat[]} = {}
 
 export function extractFileInfo (f: any) {
   const { size, lastModifiedDateTime, '@microsoft.graph.downloadUrl': downloadUrl, name, folder } = f
-  const stat: OneDriveStat = { isFile: !folder, size, lastModifiedDateTime, downloadUrl, name }
+  const path = f.parentReference.path
+  const stat: OneDriveStat = { isFile: !folder, size, lastModifiedDateTime, downloadUrl, name, path: path.slice(12) }
   return stat
 }
 
