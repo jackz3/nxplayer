@@ -41,6 +41,8 @@ const Timers = [
   { value: -1, label: '1 song' },
   { value: -2, label: '2 songs' },
   { value: -3, label: '3 songs' },
+  { value: -5, label: '5 songs' },
+  { value: -8, label: '8 songs' },
 ]
 
 // let timerStart = 0
@@ -63,6 +65,7 @@ export default function Player() {
   const loopMethodRef = useRef<LoopMethod>(loopMethod)
   const timerRef = useRef<number>(0)
   const timerStartRef = useRef<number>(0)
+  const playIdRef = useRef<number>(playId)
 
   const onPlay = useCallback((sound: Howl) => {
     const d = sound.duration()
@@ -91,6 +94,7 @@ export default function Player() {
   }, [source])
   useEffect(() => {
     if (playId >= 0) {
+      playIdRef.current = playId
       const myPlayer = MyPlayer.getInstance();
       if (source === 'baidu') {
         const file = files[playId] as BaiduFile
@@ -99,16 +103,6 @@ export default function Player() {
         getFileInfo(fsId, session?.user.accessToken).then((data: any) => {
           const dlink = data[0].dlink
           console.log('dlink', dlink)
-          // getFinalRedirectUrl(`${dlink}?access_token=${session?.user.accessToken}`).then((finalUrl) => {
-          //   if (finalUrl) {
-          //     const url = `/proxy/baidu_dl${finalUrl.slice(8)}`
-          //     console.log(finalUrl, url)
-          //     loadPlay(myPlayer, 'baidu', url, name)
-
-          //     // const urlObj = new URL(finalUrl)
-          //     // ${urlObj.pathname}${urlObj.search}&access_token=${session?.user.accessToken}`
-          //   }
-          // })
           const url = `/api/proxy?url=${encodeURIComponent(dlink)}`
           loadPlay(myPlayer, 'baidu', url, name)
         })
@@ -126,6 +120,7 @@ export default function Player() {
 
   const playNext = useCallback((myPlayer: MyPlayer) => {
     const loopMethod = loopMethodRef.current
+    const playId = playIdRef.current
     console.log('end', loopMethod, files.length, playId)
     if (loopMethod === 'loop') {
       if (playId === files.length - 1) {
@@ -137,17 +132,18 @@ export default function Player() {
       myPlayer.seek(0);
       myPlayer.play()
     }
-  }, [files, playId])
+  }, [files])
 
   const onEnd = useCallback((myPlayer: MyPlayer) => {
     console.log('onEnd', playId)
-    playNext(myPlayer)
     if (timerRef.current < 0 && (++timerStartRef.current + timerRef.current) == 0) {
       myPlayer.pause()
       timerStartRef.current = 0
       setTimerValue(0)
       setPlayerState('paused')
+      return
     }
+    playNext(myPlayer)
   }, [files, playId])
 
   const playSound = useCallback((myPlayer: MyPlayer) => {
@@ -279,6 +275,9 @@ export default function Player() {
           </button>
           {
             timer > 0 ? <div className='ml-6 text-sm text-orange-600 absolute right-[20%]'>{formatTime(timer * 60 - (timerStartRef.current === 0 ? 0 : (Date.now() - timerStartRef.current) / 1000))}</div> : null
+          }
+          {
+            timer < 0 ? <div className='ml-6 text-sm text-orange-600 absolute right-[15%]'>{`${-timer} left` }</div> : null
           }
         </div>
         <div>{formatTime(duration)}</div>

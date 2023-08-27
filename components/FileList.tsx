@@ -33,7 +33,7 @@ interface FileListProps {
 function FileList (props: FileListProps) {
   const { path, source } = props
   const { data: session } = useSession()
-  const { data, error, isLoading } = useSWR([source, path, session?.user.accessToken], fetcher)
+  const { data, error, isLoading } = useSWR([source, path, session?.user.accessToken], fetcher, { revalidateOnFocus: false })
   const [ setPlayId, setSource, playerSource, playerPath, playId ] = usePlayerStore(state => [state.setPlayId, state.setSource, state.source, state.path, state.playId])
   const [ logout ] = useMsAccountStore(state => [state.logout])
 
