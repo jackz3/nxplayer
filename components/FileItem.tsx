@@ -36,7 +36,7 @@ function DirItem(props: DirItemProps) {
     url = `/onedrive${f.path || '/'}/${f.name}`
     name = f.name
   }
-  return <Link className="inline-flex items-center w-full" href={url}><IoFolderOutline className="w-4 h-4 mr-1" />{name}</Link>
+  return <Link className="inline-flex items-center w-full" href={url}><IoFolderOutline className="w-4 h-4 mr-1 shrink-0" /><span className="overflow-hidden text-ellipsis whitespace-nowrap grow">{name}</span></Link>
 }
 
 
@@ -58,9 +58,9 @@ function PlayableItem(props: PlayableItemProps) {
   }
 
   return (
-    <div className="flex items-center w-full justify-between" onClick={() => playFile(idx)}>
-      <span className="inline-flex items-center"><IoMusicalNotesOutline className="w-4 h-4 mr-1" />{name}</span>
-      <span className="text-sm ml-1">{formatFileSize(file.size)}</span></div>
+    <div className="flex items-center justify-between" onClick={() => playFile(idx)}>
+      <IoMusicalNotesOutline className="w-4 h-4 mr-1 shrink-0" /><span className="overflow-hidden text-ellipsis whitespace-nowrap grow">{name}</span>
+      <span className="text-sm ml-1 shrink-0">{formatFileSize(file.size)}</span></div>
   )
 }
 
