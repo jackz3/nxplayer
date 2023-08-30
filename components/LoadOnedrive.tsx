@@ -27,7 +27,7 @@ function LoadOnedrive(props: LoadBaiduProps) {
   const [ path, fileName, seek, setPlayIdByName ] = usePlayerStore(state => [state.path, state.fileName, state.seek, state.setPlayIdByName])
   useEffect(() => {
     if (!loggedIn) {
-      login('onedrive' + path)
+      login('/onedrive' + path)
     }
   }, [loggedIn])
   const { data, error, isLoading } = useSWR([path, loggedIn], fetcher)

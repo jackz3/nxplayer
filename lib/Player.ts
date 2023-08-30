@@ -5,11 +5,11 @@ export function formatTime (secs: number) {
     const minutes = Math.floor(secs / 60) || 0;
     const seconds = (secs - minutes * 60) || 0;
 
-    return minutes + ':' + (seconds < 10 ? '0' : '') + Math.round(seconds);
+    return minutes + ':' + (seconds < 10 ? '0' : '') + Math.floor(seconds);
 }
 
 // Change global volume.
-Howler.volume(0.5);
+// Howler.volume(0.5);
 
 export class Sound {
   private static instance: Howl;
@@ -144,5 +144,9 @@ export class MyPlayer {
       return [ d, p ]
     }
     return [ 0, 0 ]
+  }
+
+  public playing () {
+    return this.sound?.playing()
   }
 }

@@ -1,6 +1,5 @@
 'use client'
 import Link from 'next/link'
-import Image from 'next/image'
 import { IoVolumeMediumOutline, IoPlay } from 'react-icons/io5'
 import { useLatestRecordStore, SourceType, usePlayerStore } from "@/app/(store)/store"
 import { formatTime } from '@/lib/Player'
