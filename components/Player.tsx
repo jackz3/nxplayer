@@ -319,7 +319,7 @@ export default function Player() {
           </button>
           <button type="button" onClick={playHandler} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center mx-4 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             {
-              state === 'playing' ? <IoPause className="w-6 h-6" /> : <IoPlay className="w-6 h-6" />
+              state === 'playing' ? <IoPause className="w-6 h-6" /> : <IoPlay className="w-6 h-6 relative left-[1px]" />
             }
             <span className="sr-only">Play</span>
           </button>
