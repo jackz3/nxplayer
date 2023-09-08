@@ -264,7 +264,7 @@ export default function Player() {
   }
 
   return (
-    <div className="sticky w-full max-w-screen-md bottom-0 left-0 bg-white flex-shrink-0 border-t rounded-t-lg">
+    <div className="sticky w-full max-w-screen-md bottom-0 left-0 bg-white flex-shrink-0 border-t rounded-t-lg border-t-blue-200">
       <div className='flex justify-between items-end h-6'>
         {(loading && source === 'baidu' && fileName && path) ? <LoadBaidu /> : null}
         {(loading && source === 'onedrive' && fileName && path) ? <LoadOnedrive /> : null}
