@@ -53,7 +53,7 @@ function FileList (props: FileListProps) {
   if (error) {
     console.log(error)
   }
-  if (error) return <div>error...</div>
+  if (error) return <div>{error}</div>
 
   if (!data) return <Loading message="Loading ..." />
   let offset = 0

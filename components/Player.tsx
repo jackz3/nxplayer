@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, ChangeEvent, useCallback, useRef } from 'react'
-import { IoPlaySkipBack, IoPlaySkipForward, IoChevronUpCircleOutline, IoChevronDownCircleOutline, IoPause, IoRepeat, IoShuffle, IoReload, IoPlay } from 'react-icons/io5'
+import { IoPlaySkipBack, IoPlaySkipForward, IoChevronUpCircleOutline, IoChevronDownCircleOutline, IoPause, IoRepeat, IoShuffle, IoReload, IoPlay, IoPlayBackOutline, IoPlayForwardOutline } from 'react-icons/io5'
 import { Howl } from 'howler';
 import { useSession } from 'next-auth/react';
 import { MyPlayer, formatTime } from '@/lib/Player';
@@ -136,12 +136,14 @@ export default function Player() {
 
   const onEnd = useCallback((myPlayer: MyPlayer) => {
     console.log('onEnd', playId)
-    if (timerRef.current < 0 && (++timerStartRef.current + timerRef.current) == 0) {
-      myPlayer.pause()
-      timerStartRef.current = 0
-      setTimerValue(0)
-      setPlayerState('paused')
-      return
+    if (timerRef.current < 0) {
+      const newTimer =  timerRef.current + 1
+      setTimerValue(newTimer)
+      if (newTimer == 0) {
+        myPlayer.pause()
+        setPlayerState('paused')
+        return
+      }
     }
     playNext(myPlayer)
   }, [files, playId])
@@ -218,7 +220,7 @@ export default function Player() {
       setLoopMethodValue('loop')
     }
   }
-  
+
   const playPrev = () => {
     if (playIdRef.current > 0) {
       setPlayId(playIdRef.current - 1)
@@ -248,14 +250,32 @@ export default function Player() {
     }
   }, [])
 
+  const forwordOrBack = (sec: number) => {
+    const player = MyPlayer.getInstance()
+    if (player) {
+      player.pause()
+      let sk = seek + sec
+      if (sk < 0) sk = 0
+      setSeek(sk)
+      setPercent(sk * 100 / duration)
+      player.seekSeconds(sk)
+      player.play()
+    }
+  }
 
   return (
     <div className="sticky w-full max-w-screen-md bottom-0 left-0 bg-white flex-shrink-0 border-t rounded-t-lg">
-      <div className='flex justify-between'>
+      <div className='flex justify-between items-end h-6'>
         {(loading && source === 'baidu' && fileName && path) ? <LoadBaidu /> : null}
         {(loading && source === 'onedrive' && fileName && path) ? <LoadOnedrive /> : null}
+        {
+          timer > 0 ? <div className='ml-6 text-sm text-orange-600'>{formatTime(timer * 60 - (timerStartRef.current === 0 ? 0 : (Date.now() - timerStartRef.current) / 1000))}</div> : null
+        }
+        {
+          timer < 0 ? <div className='ml-6 text-sm text-orange-600'>{`${-timer} left`}</div> : null
+        }
         <div className='text-sm mx-auto'>{state === 'playing' && source && store[source] ? store[source]?.fileName : null}</div>
-        <div onClick={() => setCollapsed(!collapsed)} className="mr-6 -mt-4 bg-white text-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-base text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
+        <div onClick={() => setCollapsed(!collapsed)} className="mr-6 mb-1 bg-white text-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-base text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
           {
             collapsed ? <IoChevronUpCircleOutline className='w-8 h-8' /> : <IoChevronDownCircleOutline className='w-8 h-8' />
           }
@@ -289,11 +309,15 @@ export default function Player() {
       <div className="flex justify-between px-2 pb-4">
         <div>{formatTime(seek)}</div>
         <div className='flex items-center'>
+          <button type="button" onClick={() => forwordOrBack(-10)} className="mr-4 text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
+            <IoPlayBackOutline className='w-3 h-3' />
+            <span className="sr-only">Back</span>
+          </button>
           <button type="button" onClick={playPrev} className="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
             <IoPlaySkipBack className='w-3 h-3' />
             <span className="sr-only">Prev</span>
           </button>
-          <button type="button" onClick={playHandler} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center mx-3 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          <button type="button" onClick={playHandler} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center mx-4 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             {
               state === 'playing' ? <IoPause className="w-6 h-6" /> : <IoPlay className="w-6 h-6" />
             }
@@ -303,12 +327,10 @@ export default function Player() {
             <IoPlaySkipForward className='w-3 h-3' />
             <span className="sr-only">Next</span>
           </button>
-          {
-            timer > 0 ? <div className='ml-6 text-sm text-orange-600 absolute right-[20%]'>{formatTime(timer * 60 - (timerStartRef.current === 0 ? 0 : (Date.now() - timerStartRef.current) / 1000))}</div> : null
-          }
-          {
-            timer < 0 ? <div className='ml-6 text-sm text-orange-600 absolute right-[15%]'>{`${-timer} left` }</div> : null
-          }
+          <button type="button" onClick={() => forwordOrBack(10)} className="ml-4 text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
+            <IoPlayForwardOutline className='w-3 h-3' />
+            <span className="sr-only">Forword</span>
+          </button>
         </div>
         <div>{formatTime(duration)}</div>
       </div>
