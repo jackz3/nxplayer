@@ -8,6 +8,7 @@ import { usePlayerStore, useLatestRecordStore, OneDriveStat, BaiduFile, SourceTy
 import { RangeSlider } from 'flowbite-react'
 import LoadBaidu from './LoadBaidu';
 import LoadOnedrive from './LoadOnedrive';
+import { msLogin } from '@/lib/msgraph';
 
 export function requestBaidu(url: string, headers: any = {}, params: any = {}) {
   return fetch('/api/proxy', {
@@ -50,7 +51,8 @@ const Timers = [
 type LoopMethod = 'loop' | 'single' | 'shuffle'
 export default function Player() {
   const { data: session } = useSession()
-  const [source, playId, setPlayId, files, path, initialSeek, loading, setLoading, fileName, state, setPlayerState] = usePlayerStore(state => [state.source, state.playId, state.setPlayId, state.files, state.path, state.seek, state.loading, state.setLoading, state.fileName, state.state, state.setPlayerState])
+  const [source, playId, setPlayId, files, path, initialSeek, loading, setLoading, fileName, state, setPlayerState, setLoadingSource] = usePlayerStore(state => [
+    state.source, state.playId, state.setPlayId, state.files, state.path, state.seek, state.loading, state.setLoading, state.fileName, state.state, state.setPlayerState, state.setLoadingSource])
   const [updateRecord, updateSeek, store] = useLatestRecordStore(state => [state.updateRecord, state.updateSeek, state])
   const [duration, setDuration] = useState(0)
   const [seek, setSeek] = useState(0)
@@ -149,14 +151,25 @@ export default function Player() {
   }, [files, playId])
 
   const playSound = useCallback((myPlayer: MyPlayer) => {
-    console.log('playSound', playId)
     myPlayer.onPlay(onPlay);
     myPlayer.onEnd(() => {
       onEnd(myPlayer)
     });
-    // if (initialSeek > 0) {
-    //   myPlayer.seekSeconds(initialSeek);
-    // }
+    myPlayer.onLoaderror((a, b) => {
+      if (source === 'onedrive' && (b === 2 || b === 4)) {
+        msLogin().then(() => {
+          const f = files[playIdRef.current] as OneDriveStat
+          let seek = 0
+          if (store.onedrive?.fileName === f.name) {
+            seek = store.onedrive.seek
+          }
+          setLoadingSource('onedrive', true, path, f.name, seek)
+          console.log(loading, source === 'onedrive' , f.name, path, seek)
+        })
+      } else {
+        console.log('load error', b)
+      }
+    })
     myPlayer.rate(speed)
     myPlayer.play();
     setPlayerState('playing');

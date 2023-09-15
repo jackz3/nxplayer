@@ -94,6 +94,9 @@ export class MyPlayer {
           // wave.container.style.display = 'none';
           // bar.style.display = 'block';
         },
+      onplayerror: function(a, b) {
+        console.log('play error', a, b)
+      }
     })
     if (seek) {
       this.sound.seek(seek)
@@ -106,6 +109,10 @@ export class MyPlayer {
 
   public onEnd (fn: (sound: Howl) => void) {
     this.sound?.on('end', () => fn(this.sound!))
+  }
+
+  public onLoaderror (fn: (sound: Howl, error: unknown) => void) {
+    this.sound?.on('loaderror', (a, b) => fn(this.sound!, b))
   }
 
   public play() {
