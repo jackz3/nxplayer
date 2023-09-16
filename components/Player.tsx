@@ -322,13 +322,13 @@ export default function Player() {
       <div className="flex justify-between px-2 pb-4">
         <div>{formatTime(seek)}</div>
         <div className='flex items-center'>
-          <button type="button" onClick={() => forwordOrBack(-10)} className="mr-4 text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
-            <IoPlayBackOutline className='w-3 h-3' />
-            <span className="sr-only">Back</span>
-          </button>
-          <button type="button" onClick={playPrev} className="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
+          <button type="button" onClick={playPrev} className="mr-4 text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
             <IoPlaySkipBack className='w-3 h-3' />
             <span className="sr-only">Prev</span>
+          </button>
+          <button type="button" onClick={() => forwordOrBack(-10)} className="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
+            <IoPlayBackOutline className='w-3 h-3' />
+            <span className="sr-only">Back</span>
           </button>
           <button type="button" onClick={playHandler} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center mx-4 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             {
@@ -336,13 +336,13 @@ export default function Player() {
             }
             <span className="sr-only">Play</span>
           </button>
-          <button type="button" onClick={() => playNext(MyPlayer.getInstance())} className="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
-            <IoPlaySkipForward className='w-3 h-3' />
-            <span className="sr-only">Next</span>
-          </button>
-          <button type="button" onClick={() => forwordOrBack(10)} className="ml-4 text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
+          <button type="button" onClick={() => forwordOrBack(10)} className="text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
             <IoPlayForwardOutline className='w-3 h-3' />
             <span className="sr-only">Forword</span>
+          </button>
+          <button type="button" onClick={() => playNext(MyPlayer.getInstance())} className="ml-4 text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500">
+            <IoPlaySkipForward className='w-3 h-3' />
+            <span className="sr-only">Next</span>
           </button>
         </div>
         <div>{formatTime(duration)}</div>
