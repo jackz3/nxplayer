@@ -7,11 +7,11 @@ export default function TransitionWrapper({ children }: { children: React.ReactN
   const path = usePathname()
   return (
     <TransitionGroup className={'flex flex-col grow'}>
-      <CSSTransition key={path} timeout={{ exit: 0, enter: 500 }} unmountOnExit classNames={{
+      <CSSTransition key={path} timeout={600} unmountOnExit classNames={{
         // appear: "opacity-0",
-        // appearActive: "transition ease-in-out duration-500 opacity-100",
-        enter: "transform translate-x-36",
-        enterActive: "transform translate-x-0 transition-transform duration-300 ease-in-out",
+        // appearActive: "transition-opacity ease-in-out duration-500 opacity-100",
+        enter: "translate-x-16 opacity-0",
+        enterActive: "translate-x-px transition duration-500 ease-in opacity-100",
         // enterDone: 'opacity-100',
         exit: 'opacity-0',
       }}>
