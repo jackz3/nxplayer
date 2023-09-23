@@ -1,11 +1,11 @@
 import Head from 'next/head'
 import './globals.css'
 // import '@/styles/style.css'
-// import { SessionProvider } from 'next-auth/react'
 import type { AppProps } from 'next/app'
 import SessionProvider from './SessionProvider'
 import Header from '@/components/Header'
 import Player from '@/components/Player'
+import TransitionWrapper from '@/components/TransitionWrapper'
 
 export const metadata = {
   title: 'Cloud Player',
@@ -61,7 +61,9 @@ export default function RootLayout({
         <div className='flex flex-col h-screen mx-auto relative w-full lg:max-w-3xl bg-white overflow-hidden'>
           <SessionProvider>
             <Header />
+            <TransitionWrapper>
             {children}
+            </TransitionWrapper>
             <Player />
           </SessionProvider>
         </div>

@@ -18,12 +18,12 @@ function OnedriveFiles({ params }: { params: { path: string[] } }) {
 
   if (!loggedIn) return <Loading message="Logging in" />
   return (
-    <>
+    <div className="flex flex-col grow">
       <PathSelect root='onedrive' path={paths} />
       <div className='overflow-y-auto grow'>
         <FileList source='onedrive' path={'/' + paths.join('/')} />
       </div>
-    </>
+    </div>
   )
 }
 

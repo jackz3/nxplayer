@@ -63,11 +63,11 @@ function FileList (props: FileListProps) {
     offset = data.filter((x: OneDriveStat) => !x.isFile).length
   }
   
-  return <div className="">
+  return <>
   {
     data.map((file: BaiduFile|OneDriveStat, idx: number) => <FileItem key={idx} source={source} file={file} idx={idx - offset} playFile={playFile} playId={playId} />)
   }
-  </div>
+  </>
 }
 
 export default FileList

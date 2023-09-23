@@ -23,13 +23,12 @@ function BaiduFiles(props: BaiduFilesProps) {
 
   if (status !== 'authenticated') return <Loading message="Logging in" />
 
-  return (<>
+  return <div className="flex flex-col grow">
     <PathSelect root='baidu' path={paths} />
     <div className='grow overflow-y-auto'>
       <FileList source='baidu' path={'/' + paths.join('/')} />
     </div>
-  </>
-  )
+  </div>
 }
 
 export default BaiduFiles
