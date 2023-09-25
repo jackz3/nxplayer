@@ -25,7 +25,7 @@ function BaiduFiles(props: BaiduFilesProps) {
 
   return <div className="flex flex-col grow">
     <PathSelect root='baidu' path={paths} />
-    <div className='grow overflow-y-auto'>
+    <div className='overflow-y-auto h-10'>
       <FileList source='baidu' path={'/' + paths.join('/')} />
     </div>
   </div>

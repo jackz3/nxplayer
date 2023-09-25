@@ -20,7 +20,7 @@ function OnedriveFiles({ params }: { params: { path: string[] } }) {
   return (
     <div className="flex flex-col grow">
       <PathSelect root='onedrive' path={paths} />
-      <div className='overflow-y-auto grow'>
+      <div className='overflow-y-auto grow h-10'>
         <FileList source='onedrive' path={'/' + paths.join('/')} />
       </div>
     </div>
