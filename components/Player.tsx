@@ -296,7 +296,7 @@ export default function Player() {
         </div>
       </div>
       {
-        collapsed ? null : <div className='flex px-2 justify-between my-4'>
+        <div className={`flex px-2 justify-between overflow-hidden transition-height ${collapsed ? 'h-0' : 'h-8 my-4'}`}>
           <div className='flex items-center w-1/3'>
             <span className='text-sm mr-1'>speed:{speed}</span>
             <RangeSlider className='-mt-2' onChange={changeSpeed} sizing="sm" min={0.5} max={2} step={0.25} value={speed} /></div>
@@ -307,7 +307,10 @@ export default function Player() {
           </button>
           <div className='flex items-center w-2/5'>
             <span className='text-sm mr-1'>timer</span>
-            <select value={timer} onChange={(e) => setTimerValue(+e.target.value)} className="w-full text-center block p-1 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <select value={timer} onChange={(e) => {
+              setTimerValue(+e.target.value)
+              setCollapsed(true)
+              }} className="w-full text-center block p-1 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
               {
                 Timers.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)
               }
